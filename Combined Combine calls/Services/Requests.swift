@@ -4,10 +4,7 @@ import Combine
 class Requests {
     
     func loadUserDetails () -> AnyPublisher<UserDetails, Error>{
-        loadUser().flatMap {  user in
-            self.loadDetails(user: user)
-        }
-        .eraseToAnyPublisher()
+        loadUser().flatMap(loadDetails).eraseToAnyPublisher()
     }
     
     func loadUser() -> AnyPublisher<User, Error> {
