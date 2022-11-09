@@ -4,7 +4,7 @@ import Combine
 class Requests {
     
     func loadUser() -> AnyPublisher<User, Error> {
-        let url = URL(string: "http://a-url.com")!
+        let url = URL(string: "http://a-user.com")!
         return URLSession.shared.dataTaskPublisher(for: url).tryMap { result in
             guard let httpResponse = result.response as? HTTPURLResponse, httpResponse.statusCode <= 200 && httpResponse.statusCode < 300 else {
                 throw URLError(.badServerResponse)
@@ -15,8 +15,25 @@ class Requests {
         .eraseToAnyPublisher()
     }
     
+    func loadDetails(user: User) -> AnyPublisher<UserDetails, Error> {
+        let url = URL(string: "http://a-user.com/\(user.id)/details")!
+        return URLSession.shared.dataTaskPublisher(for: url).tryMap { result in
+            guard let httpResponse = result.response as? HTTPURLResponse, httpResponse.statusCode <= 200 && httpResponse.statusCode < 300 else {
+                throw URLError(.badServerResponse)
+            }
+            return result.data
+        }
+        .decode(type: UserDetails.self, decoder: JSONDecoder())
+        .eraseToAnyPublisher()
+    }
+    
 }
 
 struct User: Codable {
     let id: UUID
+}
+
+struct UserDetails: Codable {
+    let id: UUID
+    let name, firstName, email: String
 }
