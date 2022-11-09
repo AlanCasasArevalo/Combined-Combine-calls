@@ -3,6 +3,13 @@ import Combine
 
 class Requests {
     
+    func loadUserDetails () -> AnyPublisher<UserDetails, Error>{
+        loadUser().flatMap {  user in
+            self.loadDetails(user: user)
+        }
+        .eraseToAnyPublisher()
+    }
+    
     func loadUser() -> AnyPublisher<User, Error> {
         let url = URL(string: "http://a-user.com")!
         return URLSession.shared.dataTaskPublisher(for: url).tryMap { result in
